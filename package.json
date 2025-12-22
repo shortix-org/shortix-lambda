@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "build": "tsc",
+    "package": "npm run build && mkdir -p dist/nodejs && cp -r layer/nodejs/node_modules dist/nodejs/ && cd dist && zip -r ../layer.zip nodejs && zip -r ../backend.zip handlers shared"
   },
   "keywords": [],
   "author": "",
@@ -11,10 +13,16 @@
   "description": "",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.159",
+    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.3",
-    "@types/uuid": "^10.0.0",
     "aws-sdk": "^2.1693.0",
-    "typescript": "^5.9.3",
-    "uuid": "^13.0.0"
+    "aws-sdk-mock": "^6.2.1",
+    "jest": "^30.2.0",
+    "nanoid": "^3.3.6",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "nanoid": "^3.3.6"
   }
 }
