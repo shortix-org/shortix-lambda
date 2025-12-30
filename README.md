@@ -19,7 +19,6 @@ These can be configured per environment (dev, staging, prod) in **Settings** -> 
 | Variable | Description |
 |---|---|
 | `AWS_REGION` | e.g., `us-east-1` |
-| `S3_ARTIFACT_BUCKET` | The S3 bucket where Lambda ZIPs are stored |
 
 ### Manual Trigger
 Go to **Actions** -> **Deploy Backend** -> **Run workflow**. 

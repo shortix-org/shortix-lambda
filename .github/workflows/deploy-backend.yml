@@ -72,6 +72,17 @@ jobs:
           parameter-overrides: >-
             Environment=${{ github.event.inputs.environment }}
 
+      - name: Fetch Artifact Bucket Name
+        id: fetch-bucket
+        run: |
+          BUCKET=$(aws ssm get-parameter --name "${{ env.SSM_PREFIX }}/persistence/artifact-bucket-name" --query "Parameter.Value" --output text)
+          echo "bucket_name=$BUCKET" >> $GITHUB_OUTPUT
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp backend.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/backend.zip
+          aws s3 cp layer.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/layer.zip
+
       - name: Deploy Application Stack
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
