@@ -39,6 +39,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Layer dependencies
+        run: |
+          cd layer/nodejs
+          npm install
+
       - name: Build and Package
         run: npm run package
 
