@@ -4,16 +4,21 @@
 
 This repository uses GitHub Actions for automated deployment.
 
-### GitHub Secrets Required
-
-For the `Deploy Backend` workflow to run, configure the following secrets in your GitHub repository:
+### Required GitHub Secrets
 
 | Secret | Description |
 |---|---|
 | `AWS_ACCESS_KEY_ID` | AWS IAM Access Key ID |
 | `AWS_SECRET_ACCESS_KEY` | AWS IAM Secret Secret |
-| `AWS_REGION` | e.g., `us-east-1` |
 | `GH_PAT` | GitHub Personal Access Token (to checkout `shortix-infra`) |
+
+### Required GitHub Variables (Environment-specific)
+
+These can be configured per environment (dev, staging, prod) in **Settings** -> **Environments**.
+
+| Variable | Description |
+|---|---|
+| `AWS_REGION` | e.g., `us-east-1` |
 | `S3_ARTIFACT_BUCKET` | The S3 bucket where Lambda ZIPs are stored |
 
 ### Manual Trigger
