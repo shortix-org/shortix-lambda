@@ -92,8 +92,6 @@ jobs:
           no-fail-on-empty-changeset: "1"
           parameter-overrides: >-
             Environment=${{ github.event.inputs.environment }},
-            VpcId=${{ env.SSM_PREFIX }}/networking/vpc-id,
-            PrivateSubnetIds=${{ env.SSM_PREFIX }}/networking/private-subnets,
             DynamoDBTableName=${{ env.SSM_PREFIX }}/persistence/table-name,
             UserPoolId=${{ env.SSM_PREFIX }}/auth/user-pool-id,
             ArtifactBucketName=${{ env.SSM_PREFIX }}/persistence/artifact-bucket-name,
