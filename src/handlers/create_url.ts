@@ -1,8 +1,14 @@
-
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { nanoid } from 'nanoid';
+import { StepFunctions } from 'aws-sdk';
 import { getDynamoDb, TABLE_NAME } from '../shared/dynamo';
 import { successResponse, errorResponse } from '../shared/response';
+import { UrlStatus } from '../shared/enums';
+
+
+
+const stepFunctions = new StepFunctions();
+const STATE_MACHINE_ARN = process.env.STATE_MACHINE_ARN || '';
 
 export const handler: APIGatewayProxyHandler = async (event) => {
     try {
@@ -42,7 +48,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             original_url: url,
             short_code: shortCode,
             user_id: userId,
-            clicks: 0
+            clicks: 0,
+            status: UrlStatus.PENDING
         };
 
         await getDynamoDb().put({
@@ -50,6 +57,20 @@ export const handler: APIGatewayProxyHandler = async (event) => {
             Item: item,
             ConditionExpression: 'attribute_not_exists(pk)'
         }).promise();
+
+        // Trigger Step Function Verification
+        if (STATE_MACHINE_ARN) {
+            try {
+                await stepFunctions.startExecution({
+                    stateMachineArn: STATE_MACHINE_ARN,
+                    input: JSON.stringify(item),
+                    name: `verify-${shortCode}` // Ensure uniqueness
+                }).promise();
+            } catch (sfError) {
+                console.error('Failed to trigger verification workflow:', sfError);
+                // Continue, don't fail the request. Status remains PROCESSING.
+            }
+        }
 
         return successResponse({
             short_code: shortCode,
