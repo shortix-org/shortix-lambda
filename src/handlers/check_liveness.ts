@@ -9,17 +9,19 @@ interface LivenessEvent {
 }
 
 interface LivenessResult {
+    pk: string;
+    sk: string;
     status: UrlStatus.ACTIVE | UrlStatus.INACTIVE;
 }
 
 export const handler: Handler<LivenessEvent, LivenessResult> = async (event) => {
-    const { original_url } = event;
+    const { pk, sk, original_url } = event;
     console.log(`Checking liveness for: ${original_url}`);
 
     try {
         await checkUrl(original_url);
         console.log('URL is live');
-        return { status: UrlStatus.ACTIVE };
+        return { pk, sk, status: UrlStatus.ACTIVE };
     } catch (error) {
         console.log('URL check failed:', error);
         // Throw error to trigger Step Functions Retry if it's a transient error?
@@ -32,7 +34,7 @@ export const handler: Handler<LivenessEvent, LivenessResult> = async (event) => 
 
         // Simplification: If error is 404, return INACTIVE. If network error, throw to let SF retry.
         if ((error as any).code === 'ENOTFOUND' || (error as any).statusCode === 404) {
-            return { status: UrlStatus.INACTIVE };
+            return { pk, sk, status: UrlStatus.INACTIVE };
         }
         throw error; // Let SF retry
     }
