@@ -81,8 +81,8 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp backend.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/backend.zip
-          aws s3 cp layer.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/layer.zip
+          aws s3 cp backend.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/backend-${{ github.sha }}.zip
+          aws s3 cp layer.zip s3://${{ steps.fetch-bucket.outputs.bucket_name }}/layer-${{ github.sha }}.zip
 
       - name: Deploy Application Stack
         uses: aws-actions/aws-cloudformation-github-deploy@v1
@@ -97,5 +97,5 @@ jobs:
             DynamoDBTableName=${{ env.SSM_PREFIX }}/persistence/table-name,
             UserPoolId=${{ env.SSM_PREFIX }}/auth/user-pool-id,
             ArtifactBucketName=${{ env.SSM_PREFIX }}/persistence/artifact-bucket-name,
-            LambdaZipKey=backend.zip,
-            LayerZipKey=layer.zip
+            LambdaZipKey=backend-${{ github.sha }}.zip,
+            LayerZipKey=layer-${{ github.sha }}.zip
