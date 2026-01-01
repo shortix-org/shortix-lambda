@@ -33,10 +33,18 @@ export const handler: Handler<LivenessEvent, LivenessResult> = async (event) => 
         // But if we return status, the SF task succeeds.
 
         // Simplification: If error is 404, return INACTIVE. If network error, throw to let SF retry.
-        if ((error as any).code === 'ENOTFOUND' || (error as any).statusCode === 404) {
+        const err = error as any;
+        if (err.code === 'ENOTFOUND' || err.statusCode === 404 || err.statusCode === 410) {
             return { pk, sk, status: UrlStatus.INACTIVE };
         }
-        throw error; // Let SF retry
+
+        // Protected resources (401/403) are technically "Alive"
+        if (err.statusCode === 401 || err.statusCode === 403) {
+            console.log(`URL is protected (${err.statusCode}), marking as ACTIVE`);
+            return { pk, sk, status: UrlStatus.ACTIVE };
+        }
+
+        throw error; // Let SF retry for 5xx or timeouts
     }
 };
 
